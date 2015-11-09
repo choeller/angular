@@ -11,9 +11,10 @@ import {forwardRef, Provider, Optional, Inject} from 'angular2/src/core/di';
 import {NgControl} from './ng_control';
 import {Form} from './form_interface';
 import {NgControlGroup} from './ng_control_group';
+import {NgControlArray} from './ng_control_array';
 import {ControlContainer} from './control_container';
-import {AbstractControl, ControlGroup, Control} from '../model';
-import {setUpControl, setUpControlGroup, composeValidators, composeAsyncValidators} from './shared';
+import {AbstractControl, ControlGroup, ControlArray, Control} from '../model';
+import {setUpControl, setUpControlGroup, setUpControlArray, composeValidators, composeAsyncValidators} from './shared';
 import {Validators, NG_VALIDATORS, NG_ASYNC_VALIDATORS} from '../validators';
 
 const formDirectiveProvider =
@@ -138,6 +139,16 @@ export class NgForm extends ControlContainer implements Form {
     });
   }
 
+  addControlArray(dir: NgControlArray): void {
+    PromiseWrapper.scheduleMicrotask(() => {
+      var container = this._findContainer(dir.path);
+      var array = new ControlArray([]);
+      setUpControlArray(array, dir);
+      container.addControl(dir.name, array);
+      array.updateValueAndValidity({emitEvent: false});
+    });
+  }
+
   removeControlGroup(dir: NgControlGroup): void {
     PromiseWrapper.scheduleMicrotask(() => {
       var container = this._findContainer(dir.path);
@@ -150,6 +161,10 @@ export class NgForm extends ControlContainer implements Form {
 
   getControlGroup(dir: NgControlGroup): ControlGroup {
     return <ControlGroup>this.form.find(dir.path);
+  }
+
+  getControlArray(dir: NgControlArray): ControlArray {
+    return <ControlArray>this.form.find(dir.path);
   }
 
   updateModel(dir: NgControl, value: any): void {

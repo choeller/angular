@@ -21,6 +21,7 @@ export {NgFormControl} from './forms/directives/ng_form_control';
 export {NgModel} from './forms/directives/ng_model';
 export {NgControl} from './forms/directives/ng_control';
 export {NgControlGroup} from './forms/directives/ng_control_group';
+export {NgControlArray} from './forms/directives/ng_control_array';
 export {NgFormModel} from './forms/directives/ng_form_model';
 export {NgForm} from './forms/directives/ng_form';
 export {ControlValueAccessor, NG_VALUE_ACCESSOR} from './forms/directives/control_value_accessor';

@@ -6,7 +6,8 @@ import {ControlContainer} from './control_container';
 import {NgControl} from './ng_control';
 import {AbstractControlDirective} from './abstract_control_directive';
 import {NgControlGroup} from './ng_control_group';
-import {Control, ControlGroup} from '../model';
+import {NgControlArray} from './ng_control_array';
+import {Control, ControlGroup, ControlArray} from '../model';
 import {Validators} from '../validators';
 import {ControlValueAccessor} from './control_value_accessor';
 import {ElementRef, QueryList} from 'angular2/src/core/linker';
@@ -47,6 +48,12 @@ export function setUpControl(control: Control, dir: NgControl): void {
 }
 
 export function setUpControlGroup(control: ControlGroup, dir: NgControlGroup) {
+  if (isBlank(control)) _throwError(dir, "Cannot find control");
+  control.validator = Validators.compose([control.validator, dir.validator]);
+  control.asyncValidator = Validators.composeAsync([control.asyncValidator, dir.asyncValidator]);
+}
+
+export function setUpControlArray(control: ControlArray, dir: NgControlArray) {
   if (isBlank(control)) _throwError(dir, "Cannot find control");
   control.validator = Validators.compose([control.validator, dir.validator]);
   control.asyncValidator = Validators.composeAsync([control.asyncValidator, dir.asyncValidator]);

@@ -6,12 +6,13 @@ import {CONST_EXPR} from 'angular2/src/facade/lang';
 
 import {ControlContainer} from './control_container';
 import {controlPath, composeValidators, composeAsyncValidators} from './shared';
-import {AbstractControl, ControlGroup} from '../model';
+import {AbstractControl, ControlGroup, ControlArray} from '../model';
+import {NgControlGroup} from './ng_control_group';
 import {Form} from './form_interface';
 import {Validators, NG_VALIDATORS, NG_ASYNC_VALIDATORS} from '../validators';
 
-const controlGroupProvider =
-    CONST_EXPR(new Provider(ControlContainer, {useExisting: forwardRef(() => NgControlGroup)}));
+const controlArrayProvider =
+    CONST_EXPR(new Provider(ControlContainer, {useExisting: forwardRef(() => NgControlArray)}));
 
 /**
  * Creates and binds a control group to a DOM element.
@@ -62,43 +63,29 @@ const controlGroupProvider =
  * this group can be accessed separately from the overall form.
  */
 @Directive({
-  selector: '[ng-control-group]',
-  providers: [controlGroupProvider],
-  inputs: ['name: ng-control-group'],
+  selector: '[ng-control-array]',
+  providers: [controlArrayProvider],
+  inputs: ['name: ng-control-array'],
   exportAs: 'form'
 })
-export class NgControlGroup extends ControlContainer implements OnInit,
+export class NgControlArray extends NgControlGroup implements OnInit,
     OnDestroy {
   /** @internal */
   _parent: ControlContainer;
 
   constructor(@Host() @SkipSelf() parent: ControlContainer,
-              @Optional() @Inject(NG_VALIDATORS) private _validators: any[],
-              @Optional() @Inject(NG_ASYNC_VALIDATORS) private _asyncValidators: any[]) {
-    super();
+              @Optional() @Inject(NG_VALIDATORS) _validators: any[],
+              @Optional() @Inject(NG_ASYNC_VALIDATORS) _asyncValidators: any[]) {
+    super(parent, _validators, _asyncValidators);
     this._parent = parent;
   }
 
-  onInit(): void { this.formDirective.addControlGroup(this); }
+  onInit(): void { this.formDirective.addControlArray(this); }
 
   onDestroy(): void { this.formDirective.removeControlGroup(this); }
 
   /**
-   * Get the {@link ControlGroup} backing this binding.
+   * Get the {@link ControlArray} backing this binding.
    */
-  get control(): AbstractControl { return this.formDirective.getControlGroup(this); }
-
-  /**
-   * Get the path to this control group.
-   */
-  get path(): string[] { return controlPath(this.name, this._parent); }
-
-  /**
-   * Get the {@link Form} to which this group belongs.
-   */
-  get formDirective(): Form { return this._parent.formDirective; }
-
-  get validator(): Function { return composeValidators(this._validators); }
-
-  get asyncValidator(): Function { return composeAsyncValidators(this._asyncValidators); }
+  get control(): AbstractControl { return this.formDirective.getControlArray(this); }
 }

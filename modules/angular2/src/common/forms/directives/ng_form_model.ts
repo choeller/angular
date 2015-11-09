@@ -8,9 +8,10 @@ import {Directive} from 'angular2/src/core/metadata';
 import {forwardRef, Provider, Inject, Optional} from 'angular2/src/core/di';
 import {NgControl} from './ng_control';
 import {NgControlGroup} from './ng_control_group';
+import {NgControlArray} from './ng_control_array';
 import {ControlContainer} from './control_container';
 import {Form} from './form_interface';
-import {Control, ControlGroup} from '../model';
+import {Control, ControlGroup, ControlArray} from '../model';
 import {setUpControl, setUpControlGroup, composeValidators, composeAsyncValidators} from './shared';
 import {Validators, NG_VALIDATORS, NG_ASYNC_VALIDATORS} from '../validators';
 
@@ -145,10 +146,18 @@ export class NgFormModel extends ControlContainer implements Form,
     ctrl.updateValueAndValidity({emitEvent: false});
   }
 
+  addControlArray(dir: NgControlArray) {
+    this.addControlGroup(dir);
+  }
+
   removeControlGroup(dir: NgControlGroup) {}
 
   getControlGroup(dir: NgControlGroup): ControlGroup {
     return <ControlGroup>this.form.find(dir.path);
+  }
+
+  getControlArray(dir: NgControlArray): ControlArray {
+    return <ControlArray>this.form.find(dir.path);
   }
 
   updateModel(dir: NgControl, value: any): void {

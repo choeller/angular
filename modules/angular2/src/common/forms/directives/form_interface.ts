@@ -1,6 +1,7 @@
 import {NgControl} from './ng_control';
 import {NgControlGroup} from './ng_control_group';
-import {Control, ControlGroup} from '../model';
+import {NgControlArray} from './ng_control_array';
+import {Control, ControlGroup, ControlArray} from '../model';
 
 /**
  * An interface that {@link NgFormModel} and {@link NgForm} implement.
@@ -29,6 +30,11 @@ export interface Form {
   addControlGroup(dir: NgControlGroup): void;
 
   /**
+   * Add an array of controls to this form.
+   */
+  addControlArray(dir: NgControlArray): void;
+
+  /**
    * Remove a group of controls from this form.
    */
   removeControlGroup(dir: NgControlGroup): void;
@@ -37,6 +43,11 @@ export interface Form {
    * Look up the {@link ControlGroup} associated with a particular {@link NgControlGroup}.
    */
   getControlGroup(dir: NgControlGroup): ControlGroup;
+
+  /**
+   * Look up the {@link ControlGroup} associated with a particular {@link NgControlArray}.
+   */
+  getControlArray(dir: NgControlArray): ControlArray;
 
   /**
    * Update the model for a particular control with a new value.
