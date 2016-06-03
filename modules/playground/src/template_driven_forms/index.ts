@@ -1,10 +1,12 @@
 import {bootstrap} from '@angular/platform-browser-dynamic';
-import {Component, Directive, Host} from '@angular/core';
+import {Component, Directive, Host, forwardRef, Provider} from '@angular/core';
+import {Observable} from 'rxjs/Rx';
 import {
   ControlGroup,
   NgIf,
   NgFor,
   NG_VALIDATORS,
+  NG_ASYNC_VALIDATORS,
   FORM_DIRECTIVES,
   NgControl,
   Validators,
@@ -47,6 +49,32 @@ const creditCardValidatorBinding = /** @ts2dart_const */ /** @ts2dart_Provider *
 
 @Directive({selector: '[credit-card]', providers: [creditCardValidatorBinding]})
 class CreditCardValidator {
+}
+
+@Directive({
+  selector: '[userExistsValidator]',
+  providers: [
+    new Provider(NG_ASYNC_VALIDATORS,
+      {useExisting: forwardRef(() => UserExistsValidator), multi: true})
+  ]
+})
+export class UserExistsValidator {
+  constructor() {
+  }
+  validate(control: any) {
+
+    var source = Observable.create(( observer: any) => {
+      observer.next(control.value === 'nobody' ? false : true);
+      observer.complete();
+
+      return () => {
+      };
+    });
+
+    return source.map((userExists : any) => {
+      return (userExists === false) ? { userNotFound: true } : null;
+    });
+  }
 }
 
 /**
@@ -93,11 +121,10 @@ class ShowError {
   }
 
   _errorMessage(code: string): string {
-    var config = {'required': 'is required', 'invalidCreditCard': 'is invalid credit card number'};
+    var config = {'required': 'is required', 'invalidCreditCard': 'is invalid credit card number', 'userNotFound': 'User not found'};
     return (config as any /** TODO #9100 */)[code];
   }
 }
-
 
 @Component({
   selector: 'template-driven-forms',
@@ -107,8 +134,8 @@ class ShowError {
     <form (ngSubmit)="onSubmit()" #f="ngForm">
       <p>
         <label for="firstName">First Name</label>
-        <input type="text" id="firstName" ngControl="firstName" [(ngModel)]="model.firstName" required>
-        <show-error control="firstName" [errors]="['required']"></show-error>
+        <input type="text" id="firstName" ngControl="firstName" [(ngModel)]="model.firstName" required userExistsValidator>
+        <show-error control="firstName" [errors]="['required', 'userNotFound']"></show-error>
       </p>
 
       <p>
@@ -156,7 +183,7 @@ class ShowError {
       <button type="submit" [disabled]="!f.form.valid">Submit</button>
     </form>
   `,
-  directives: [FORM_DIRECTIVES, NgFor, CreditCardValidator, ShowError]
+  directives: [FORM_DIRECTIVES, NgFor, CreditCardValidator, UserExistsValidator, ShowError]
 })
 class TemplateDrivenForms {
   model = new CheckoutModel();

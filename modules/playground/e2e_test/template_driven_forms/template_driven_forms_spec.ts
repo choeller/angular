@@ -18,4 +18,17 @@ describe('Template-Driven Forms', function() {
 
     expect(form.getInnerHtml()).toContain('is invalid credit card number');
   });
+
+  it('should display async errors', function() {
+    browser.get(URL);
+
+    var form = element.all(by.css('form')).first();
+    var input = element.all(by.css('#firstName')).first();
+    var creditCard = element.all(by.css('#creditCard')).first();
+
+    input.sendKeys('nobody');
+    creditCard.click();
+
+    expect(form.getInnerHtml()).toContain('User not found');
+  });
 });
