@@ -1,7 +1,7 @@
 import 'rxjs/add/operator/map';
 
 import {Location} from '@angular/common';
-import {AppModule, AppModuleFactoryLoader, Component} from '@angular/core';
+import {AppModule, AppModuleFactoryLoader, Component, Inject} from '@angular/core';
 import {ComponentFixture, TestComponentBuilder} from '@angular/core/testing';
 import {addProviders, configureModule, fakeAsync, inject, tick} from '@angular/core/testing';
 import {expect} from '@angular/platform-browser/testing/matchers';
@@ -1281,6 +1281,7 @@ describe('Integration', () => {
             loader: SpyAppModuleFactoryLoader) => {
              @Component({selector: 'lazy', template: 'lazy-loaded', directives: ROUTER_DIRECTIVES})
              class LazyLoadedComponent {
+               constructor( @Inject('alwaysTrue') alwaysTrue: any) {}
              }
 
              @AppModule({
